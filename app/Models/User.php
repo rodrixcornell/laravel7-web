@@ -5,10 +5,58 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
 	use Notifiable;
+	use SoftDeletes;
+
+	/**
+	 * The table associated with the model.
+	 *
+	 * @var string
+	 */
+	protected $table = 'users';
+
+	/**
+	 * The primary key associated with the table.
+	 *
+	 * @var string
+	 */
+	protected $primaryKey = 'id';
+
+	/**
+	 * Indicates if the IDs are auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = true;
+
+	/**
+	 * To enable soft deletes
+	 *
+	 * @var bool
+	 */
+	protected $softDelete = true;
+
+	/**
+	 * The attributes that aren't mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $guarded = [
+		'id', 'created_at', 'updated_at', 'deleted_at'
+	];
+
+	/**
+	 * Opcional, informar a coluna deleted_at como um Mutator de data
+	 *
+	 * @var array
+	 */
+	protected $dates = [
+		'created_at', 'updated_at', 'deleted_at', 'last_login_at', 'passwd_changed_at',
+	];
 
 	/**
 	 * The attributes that are mass assignable.
@@ -16,7 +64,21 @@ class User extends Authenticatable
 	 * @var array
 	 */
 	protected $fillable = [
-		'name', 'email', 'password',
+		'name', 'email', 'password', 'is_admin', 'is_active', 'must_change_passwd',
+	];
+
+	/**
+	 * The attributes that should be cast.
+	 *
+	 * @var array
+	 */
+	protected $casts = [
+		'created_at' => 'datetime:Y-m-d H:i:s',
+		'updated_at' => 'datetime:Y-m-d H:i:s',
+		'deleted_at' => 'datetime:Y-m-d H:i:s',
+		'last_login_at' => 'datetime:Y-m-d H:i:s',
+		'passwd_changed_at' => 'datetime:Y-m-d H:i:s',
+		'is_admin' => 'boolean',
 	];
 
 	/**
@@ -25,15 +87,21 @@ class User extends Authenticatable
 	 * @var array
 	 */
 	protected $hidden = [
-		'password', 'remember_token',
+		'password', 'remember_token', 'access_token', 'api_token',
 	];
 
-	/**
-	 * The attributes that should be cast to native types.
-	 *
-	 * @var array
-	 */
-	protected $casts = [
-		'email_verified_at' => 'datetime',
-	];
+	public function isAdmin()
+	{
+		return $this->is_admin;
+	}
+
+	public function isActive()
+	{
+		return $this->is_active;
+	}
+
+	public function getFillable()
+	{
+		return $this->fillable;
+	}
 }

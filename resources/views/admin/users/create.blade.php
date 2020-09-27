@@ -13,11 +13,11 @@
 
 			<nav aria-label="breadcrumb">
 				<ol class="breadcrumb">
-					<li class="breadcrumb-item active" aria-current="page">{{ __('Home') }}</li>
+					<li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
+					<li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">{{ __('Users') }}</a></li>
+					<li class="breadcrumb-item active" aria-current="page">{{ __('Create') }}</li>
 				</ol>
 			</nav>
-
-			{{ __('You are logged in!') }}
 		</div>
 	</div>
 @endsection
