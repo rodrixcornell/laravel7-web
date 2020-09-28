@@ -90,16 +90,6 @@ class User extends Authenticatable
 		'password', 'remember_token', 'access_token', 'api_token',
 	];
 
-	public function isAdmin()
-	{
-		return $this->is_admin;
-	}
-
-	public function isActive()
-	{
-		return $this->is_active;
-	}
-
 	public function getFillable()
 	{
 		return $this->fillable;

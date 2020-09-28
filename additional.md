@@ -53,6 +53,7 @@ docker volume rm -f homestead_dbdata homestead_dbs homestead_files
 # Scaffold basic login and registration views and routes
 ./artisan ui:auth --verbose --force --views -- [bootstrap, vue, react]
 
+npm install --save @fortawesome/fontawesome-free
 npm install && npm run dev
 ```
 ## Storage - Create the symbolic link using relative paths
@@ -90,6 +91,10 @@ DB_HOST=mysql ./artisan migrate:rollback --verbose && DB_HOST=mysql ./artisan mi
 ./artisan make:controller --verbose --force --api -- Api\\JWTAuthController
 ./artisan make:controller --verbose --force --api -- Api\\UserController
 ./artisan make:controller --verbose --force --api -- App\\Modules\\Api\\Routes\\Controllers\\RouteController
+```
+## Create a new middleware class
+```bash
+./artisan make:middleware --verbose Locale
 ```
 ## Crie um novo arquivo de migração, um novo controlador de recursos para o modelo.
 ## laravel ^5.6 --all Generate a migration, factory, and resource controller for the model

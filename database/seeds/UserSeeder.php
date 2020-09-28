@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
 	 */
 	public function run()
 	{
-		$usersQuantity = 9999;
+		$usersQuantity = 99;
 
 		$user = [
 			// 'login' => 'rodrigo.cabral',

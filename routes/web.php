@@ -15,11 +15,27 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 	return view('welcome');
-});
+})->name('root');
 
-Auth::routes();
+Route::get('/locale', function () {
+
+	$locale = session('locale');
+	// if ($locale === 'pt_br') {
+	if (\App::isLocale('pt_br')) {
+		$locale = 'en';
+	} else {
+		// $locale = \App::getLocale();
+		$locale = 'pt_br';
+	}
+
+	session(['locale' => $locale]);
+	\App::setLocale($locale);
+	return redirect()->back();
+})->name('locale');
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
 
 Route::group([
 	'prefix' => 'admin',

@@ -3,30 +3,71 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use App\Repositories\UserSearchRepository;
-// use Illuminate\Support\Facades\Validator;
+// use App\Repositories\SearchRepository;
 
-class UserRepository extends Repository
+class UserRepository
 {
-	private $userSearch;
-
+	/**
+	 * Undocumented variable
+	 *
+	 * @var object
+	 */
 	protected $model;
+	/**
+	 * Undocumented variable
+	 *
+	 * @var object
+	 */
+	private $search;
 
+	/**
+	 * Undocumented variable
+	 *
+	 * @var integer
+	 */
 	protected $perPage = 7;
 
-	function __construct(UserSearchRepository $userSearch, User $modelUser)
+	/**
+	 * Undocumented variable
+	 *
+	 * @var array
+	 */
+	protected $filters = [
+		'name', 'email',
+	];
+
+	/**
+	 * Undocumented function
+	 *
+	 * @param User $model
+	 * @param SearchRepository $search
+	 */
+	function __construct(User $model, SearchRepository $search)
 	{
-		$this->userSearch = $userSearch;
-		$this->model = $modelUser;
+		$this->model = $model;
+		$this->search = $search;
 	}
 
+	/**
+	 * Undocumented function
+	 *
+	 * @param object $request
+	 * @return void
+	 */
 	public function index($request)
 	{
-		return $this->userSearch->search($this->model::with([]), $request, $this->perPage);
-		// return $this->userSearch->search(User::with([]), $request);
+		// dd($this->model->getFillable());
+		return $this->search->searchBuilder($this->model::with([]), $request, $this->perPage, $this->filters);
+		// return $this->search->searchBuilder(User::with([]), $request);
 	}
 
-	public function show($id)
+	/**
+	 * Undocumented function
+	 *
+	 * @param integer $id
+	 * @return void
+	 */
+	public function show(int $id)
 	{
 		// if (!is_numeric($id)) abort(400, "ID \"$id\" invalido.");
 		// $user = User::where(["id"=>$id])->first();
@@ -42,7 +83,13 @@ class UserRepository extends Repository
 		return $user;
 	}
 
-	public function store($request)
+	/**
+	 * Undocumented function
+	 *
+	 * @param object $request
+	 * @return void
+	 */
+	public function store(object $request)
 	{
 		$validator = \Validator::make($request->all(), [
 			"access_token" => "nullable",
@@ -80,7 +127,14 @@ class UserRepository extends Repository
 		}
 	}
 
-	public function update($request, $id)
+	/**
+	 * Undocumented function
+	 *
+	 * @param object $request
+	 * @param integer $id
+	 * @return void
+	 */
+	public function update(object $request, int $id)
 	{
 		$validator = \Validator::make($request->all(), [
 			"access_token" => "nullable",
@@ -118,9 +172,25 @@ class UserRepository extends Repository
 		}
 	}
 
-	public function destroy($id)
+	/**
+	 * Undocumented function
+	 *
+	 * @param integer $id
+	 * @return void
+	 */
+	public function destroy(int $id)
 	{
 		// return User::where(["id" => $id])->delete();
 		return $this->model::where(["id" => $id])->delete();
+	}
+
+	public function isAdmin()
+	{
+		return $this->is_admin;
+	}
+
+	public function isActive()
+	{
+		return $this->is_active;
 	}
 }
