@@ -26,6 +26,7 @@ Homestead.json
 
 composer.lock
 package-lock.json
+/.vscode
 /.phpintel
 /.idea
 /.project
@@ -36,3 +37,6 @@ _ide_helper_models.php
 _ide_helper.php
 *.bak
 *.php-modelo
+
+*.sh
+*docker*

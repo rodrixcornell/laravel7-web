@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\App;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,18 +19,13 @@ Route::get('/', function () {
 })->name('root');
 
 Route::get('/locale', function () {
-
 	$locale = session('locale');
-	// if ($locale === 'pt_br') {
-	if (\App::isLocale('pt_br')) {
-		$locale = 'en';
-	} else {
-		// $locale = \App::getLocale();
-		$locale = 'pt_br';
-	}
-
+	$locale = ($locale !== 'en') ? 'en' : 'pt_br';
+	// $locale = App::getLocale();
+	// if (App::isLocale('pt_br')) {
 	session(['locale' => $locale]);
-	\App::setLocale($locale);
+	App::setLocale($locale);
+
 	return redirect()->back();
 })->name('locale');
 

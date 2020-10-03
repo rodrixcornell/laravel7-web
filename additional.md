@@ -62,10 +62,11 @@ npm install && npm run dev
 ```
 ## Migrations & Seeders
 ```bash
+./artisan migrate:fresh --verbose --force --seed
 ./artisan migrate:fresh --verbose --drop-views --force --seed
+./artisan migrate:fresh --verbose --force && ./artisan db:seed --verbose --force
 
 ./artisan migrate:refresh --verbose --force --seed
-./artisan migrate:fresh --verbose --drop-views --force --seed
 ./artisan migrate:refresh --verbose --force && ./artisan db:seed --verbose --force
 DB_HOST=mysql ./artisan migrate:rollback --verbose && DB_HOST=mysql ./artisan migrate --verbose --pretend > .docker/mysql/mysql.sql
 

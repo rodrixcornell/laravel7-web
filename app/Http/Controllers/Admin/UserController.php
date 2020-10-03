@@ -12,24 +12,37 @@ class UserController extends Controller
 	 * The user repository instance.
 	 * @var object
 	 */
-	protected $users;
+	protected $repository;
 
 	/**
 	 * Undocumented variable
 	 *
 	 * @var string
 	 */
-	protected $route = 'users';
+	protected $route = 'admin.users';
+
+	/**
+	 * Undocumented variable
+	 *
+	 * @var array
+	 */
+	protected $columns = [
+		'id' => '#',
+		'name' => 'locales.name',
+		'email' => 'locales.emailAddress',
+		'created_at' => 'locales.created_at',
+		'updated_at' => 'locales.updated_at',
+	];
 
 	/**
 	 * Create a new controller instance.
 	 *
-	 * @param  UserRepository  $users
+	 * @param  UserRepository  $repository
 	 * @return void
 	 */
-	public function __construct(UserRepository $users)
+	public function __construct(UserRepository $usersRepository)
 	{
-		$this->users = $users;
+		$this->repository = $usersRepository;
 	}
 
 	/**
@@ -40,31 +53,80 @@ class UserController extends Controller
 	 */
 	public function index(Request $request)
 	{
-		try {
-			$columns = [
-				'id' => '#',
-				'name' => trans('locales.name'),
-				'email' => trans('locales.emailAddress'),
-				'created_at' => trans('locales.created_at'),
-				'updated_at' => trans('locales.updated_at'),
-				'' => '',
-			];
-			// $this->authorize('add_organization');
-			$data = $this->users->index($request);
+		$breadcrumb = [
+			(object) ['url' => route('home'), 'title' => trans('locales.home')],
+			(object) ['url' => '', 'title' => trans('locales.users')],
+		];
+
+		if (!$request->is('api/*')) {
+			$data = $this->repository->index($request);
 			$search = ($data->total() > 0) ? $request->search : '';
-			if ($request->is('api/*')) {
-				return response()->json($data, 200);
-			}
-			// return response()->view('admin.users.index', $data);
-			return view('admin.' . $this->route . '.index', compact('columns', 'data', 'search'))->with([
-				'route' => $this->route
+			$order = ($request->sort) ? ':desc' : ':asc';
+			$order = (!\Str::startsWith($request->sort, '-')) ? '-' : '';
+			// $request->session()->flash('status', 'error');
+			// $request->session()->flash('status', 'success');
+			// $request->session()->flash('msg', 'Something went wrong!');
+
+			// return response()->view($this->route . '.index', $data);
+			return view($this->route . '.index', compact('breadcrumb', 'data', 'search', 'order'))->with([
+				'route' => $this->route,
+				'columns' => $this->columns,
 			]);
-		} catch (\Exception $e) {
-			$data = [
-				"message" => "Error, try again!",
-				"text" =>    $e->getMessage()
-			];
-			return response()->json($data, 401);
+		} else {
+			try {
+				// $this->authorize('add_organization');
+				$data = $this->repository->index($request);
+				return response()->json($data, 200);
+			} catch (\Exception $e) {
+				$request->session()->flash('status', 'error');
+				$request->session()->flash('msg', 'Error, try again! ' . $e->getMessage() . ', code ' . $e->getCode());
+				$data = [
+					"message" => "Error, try again!",
+					"code" => $e->getCode(),
+					"text" => $e->getMessage()
+				];
+				return response()->json($data, 401);
+			}
+		}
+	}
+
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param  int  $id
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show(Request $request, int $id)
+	{
+		$breadcrumb = [
+			(object) ['url' => route('home'), 'title' => trans('locales.home')],
+			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.users')],
+			(object) ['url' => '', 'title' => (!$request->delete) ? trans('locales.show') : trans('locales.delete')],
+		];
+
+		if (!$request->is('api/*')) {
+			$data = $this->repository->show($id);
+
+			$delete = ($request->delete ?? false);
+			return view($this->route . '.show', compact('breadcrumb', 'data', 'delete'))->with([
+				'route' => $this->route,
+			]);
+		} else {
+			try {
+				$data = $this->repository->show($id);
+				return response()->json($data, 201);
+			} catch (\Exception $e) {
+				$request->session()->flash('status', 'error');
+				$request->session()->flash('msg', 'Error, try again! ' . $e->getMessage() . ', code ' . $e->getCode());
+
+				$data = [
+					"message" => "Error, try again!",
+					"code" => $e->getCode(),
+					"text" => $e->getMessage()
+				];
+				return response()->json($data, 400);
+			}
 		}
 	}
 
@@ -75,8 +137,14 @@ class UserController extends Controller
 	 */
 	public function create()
 	{
-		return view('admin.' . $this->route . '.create')->with([
-			'route' => $this->route
+		$breadcrumb = [
+			(object) ['url' => route('home'), 'title' => trans('locales.home')],
+			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.users')],
+			(object) ['url' => '', 'title' => trans('locales.create')],
+		];
+
+		return view($this->route . '.create', compact('breadcrumb'))->with([
+			'route' => $this->route,
 		]);
 	}
 
@@ -88,51 +156,110 @@ class UserController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		//
-	}
+		// dd($request);
+		if (!$request->is('api/*')) {
+			$data = $this->repository->store($request);
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
-	public function show($id)
-	{
-		//
+			return redirect()->route($this->route . '.show', $data);
+		} else {
+			try {
+				$data = $this->repository->store($request);
+				return response()->json($data, 201);
+			} catch (\Exception $e) {
+				$request->session()->flash('status', 'error');
+				$request->session()->flash('msg', 'Error, try again! ' . $e->getMessage() . ', code ' . $e->getCode());
+
+				$data = [
+					"message" => "Error, try again!",
+					"code" => $e->getCode(),
+					"text" => $e->getMessage()
+				];
+				return response()->json($data, 400);
+			}
+		}
 	}
 
 	/**
 	 * Show the form for editing the specified resource.
 	 *
 	 * @param  int  $id
+	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function edit($id)
+	public function edit(Request $request, int $id)
 	{
-		//
+		$breadcrumb = [
+			(object) ['url' => route('home'), 'title' => trans('locales.home')],
+			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.users')],
+			(object) ['url' => '', 'title' => trans('locales.edit')],
+		];
+
+		$data = $this->repository->show($id);
+
+		return view($this->route . '.edit', compact('breadcrumb', 'data'))->with([
+			'route' => $this->route,
+		]);
 	}
 
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
 	 * @param  int  $id
+	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(Request $request, $id)
+	public function update(Request $request, int $id)
 	{
-		//
+		if (!$request->is('api/*')) {
+			$data = $this->repository->update($request, $id);
+
+			return redirect()->route($this->route . '.show', $id);
+		} else {
+			try {
+				$data = $this->repository->update($request, $id);
+				return response()->json($data, 200);
+			} catch (\Exception $e) {
+				$request->session()->flash('status', 'error');
+				$request->session()->flash('msg', 'Error, try again! ' . $e->getMessage() . ', code ' . $e->getCode());
+
+				$data = [
+					"message" => "Error, try again!",
+					"code" => $e->getCode(),
+					"text" => $e->getMessage()
+				];
+				return response()->json($data, 400);
+			}
+		}
 	}
 
 	/**
 	 * Remove the specified resource from storage.
 	 *
 	 * @param  int  $id
+	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy($id)
+	public function destroy(Request $request, int $id)
 	{
-		//
+		if (!$request->is('api/*')) {
+			$data = $this->repository->destroy($id);
+
+			return redirect()->route($this->route . '.index');
+		} else {
+			try {
+				$data = $this->repository->destroy($id);
+				return response()->json($data, 204);
+			} catch (\Exception $e) {
+				$request->session()->flash('status', 'error');
+				$request->session()->flash('msg', 'Error, try again! ' . $e->getMessage() . ', code ' . $e->getCode());
+
+				$data = [
+					"message" => "Error, try again!",
+					"code" => $e->getCode(),
+					"text" => $e->getMessage()
+				];
+				return response()->json($data, 400);
+			}
+		}
 	}
 }

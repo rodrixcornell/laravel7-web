@@ -30,12 +30,10 @@ class SearchRepository
 		}
 
 		if ($request->sort) {
-			$collection = \Str::of($request->sort)->explode(':');
-			$column = ($collection[0]) ? $collection[0] : "id";
-			$sort = ($collection[1] == "asc") ? "asc" : "desc";
-			$queryBuilder->sortBy($column, $sort);
-			// $sort = ($request->sort == "asc") ? "asc" : "desc";
-			// $queryBuilder->sortBy("name", $sort);
+			$column = $request->sort;
+			$order = (\Str::startsWith($column, '-')) ? "desc" : "asc";
+			$column = \Str::of($column)->ltrim('-');
+			$queryBuilder->orderBy($column, $order);
 		}
 
 		// dd($queryBuilder, $queryBuilder->toSql(), $queryBuilder->getBindings());

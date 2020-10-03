@@ -19,12 +19,12 @@
 	</nav>
 
 	<x-form>
-		<x-slot name="action">{{ route($route.'.store') }}</x-slot>
-		<x-slot name="method">{{ 'post' }}</x-slot>
+		<x-slot name="action">{{ route($route.'.update', $data->id) }}</x-slot>
+		<x-slot name="method">{{ 'put' }}</x-slot>
 
 		@include($route.'.form')
 
-		<button type="submit" class="btn btn-primary my-2 mr-sm-2 float-right">{{ __('locales.add') }}</button>
+		<button type="submit" class="btn btn-primary my-2 mr-sm-2 float-right">{{ __('locales.save') }}</button>
 		<a href="{{ route($route.'.index') }}" type="button"
 			class="btn btn-secondary my-2 mr-sm-2 float-right">{{ __('locales.cancel') }}</a>
 	</x-form>
