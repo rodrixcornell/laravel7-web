@@ -85,6 +85,8 @@ DB_HOST=mysql ./artisan migrate:rollback --verbose && DB_HOST=mysql ./artisan mi
 ## Generate a resource controller for the given model.
 ```bash
 ./artisan make:controller --verbose --force --resource -- Admin/UserController
+./artisan make:controller --verbose --force --resource -- Admin/PermissionController
+./artisan make:controller --verbose --force --resource -- Admin/RoleController
 
 ./artisan make:controller --verbose --force --resource --model=App\\Models\\User -- UserController
 
@@ -100,6 +102,13 @@ DB_HOST=mysql ./artisan migrate:rollback --verbose && DB_HOST=mysql ./artisan mi
 ## Crie um novo arquivo de migração, um novo controlador de recursos para o modelo.
 ## laravel ^5.6 --all Generate a migration, factory, and resource controller for the model
 ```bash
+./artisan make:model --verbose --force --migration -- App\\Models\\Role
+./artisan make:model --verbose --force --migration -- App\\Models\\Permission
+./artisan make:model --verbose --force --migration -- App\\Models\\PermissionRole
+./artisan make:model --verbose --force --migration -- App\\Models\\RoleUser
+./artisan make:model --verbose --force --migration -- App\\Models\\PermissionUser
+
+
 ./artisan make:model --verbose --force --all -- App\\Models\\Intern
 ./artisan make:model --verbose --force --migration --seed --factory --controller --resource -- App\\Models\\Intern
 ./artisan make:model --verbose --force --migration --seed --factory --controller --api -- App\\Models\\Intern
@@ -108,8 +117,8 @@ DB_HOST=mysql ./artisan migrate:rollback --verbose && DB_HOST=mysql ./artisan mi
 ./artisan make:model --verbose --force --migration --seed --factory --controller --api -- App\\Models\\Person
 ./artisan make:model --verbose --force --migration --seed --factory --controller --api -- App\\Models\\Group
 ./artisan make:model --verbose --force --migration --seed --factory --controller --api -- App\\Models\\Role
-./artisan make:model --verbose --force --migration --seed --factory --controller --api -- App\\Models\\Permissions
-./artisan make:model --verbose --force --migration --seed --factory --controller --api -- App\\Models\\Organizations
+./artisan make:model --verbose --force --migration --seed --factory --controller --api -- App\\Models\\Permission
+./artisan make:model --verbose --force --migration --seed --factory --controller --api -- App\\Models\\Organization
 ```
 ## api generate
 ## composer require rodrixcornell/apigenerate

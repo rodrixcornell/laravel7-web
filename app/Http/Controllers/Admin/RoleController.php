@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Repositories\UserRepository;
+use App\Repositories\RoleRepository;
 
-class UserController extends Controller
+class RoleController extends Controller
 {
 	/**
 	 * The user repository instance.
@@ -19,7 +19,7 @@ class UserController extends Controller
 	 *
 	 * @var string
 	 */
-	protected $route = 'admin.users';
+	protected $route = 'admin.roles';
 
 	/**
 	 * Undocumented variable
@@ -29,7 +29,10 @@ class UserController extends Controller
 	protected $columns = [
 		'id' => '#',
 		'name' => 'locales.name',
-		'email' => 'locales.emailAddress',
+		'slug' => 'locales.slug',
+		'description' => 'locales.description',
+		'active' => 'locales.active',
+		'level' => 'locales.level',
 		'created_at' => 'locales.created_at',
 		'updated_at' => 'locales.updated_at',
 	];
@@ -40,9 +43,9 @@ class UserController extends Controller
 	 * @param  UserRepository  $repository
 	 * @return void
 	 */
-	public function __construct(UserRepository $usersRepository)
+	public function __construct(RoleRepository $roleRepository)
 	{
-		$this->repository = $usersRepository;
+		$this->repository = $roleRepository;
 	}
 
 	/**
@@ -55,7 +58,7 @@ class UserController extends Controller
 	{
 		$breadcrumb = [
 			(object) ['url' => route('home'), 'title' => trans('locales.home')],
-			(object) ['url' => '', 'title' => trans('locales.users')],
+			(object) ['url' => '', 'title' => trans('locales.roles')],
 		];
 
 		if (!$request->is('api/*')) {
@@ -63,18 +66,13 @@ class UserController extends Controller
 			$search = ($data->total() > 0) ? $request->search : '';
 			$order = ($request->sort) ? ':desc' : ':asc';
 			$order = (!\Str::startsWith($request->sort, '-')) ? '-' : '';
-			// $request->session()->flash('status', 'error');
-			// $request->session()->flash('status', 'success');
-			// $request->session()->flash('msg', 'Something went wrong!');
 
-			// return response()->view($this->route . '.index', $data);
 			return view($this->route . '.index', compact('breadcrumb', 'data', 'search', 'order'))->with([
 				'route' => $this->route,
 				'columns' => $this->columns,
 			]);
 		} else {
 			try {
-				// $this->authorize('add_organization');
 				$data = $this->repository->index($request);
 				return response()->json($data, 200);
 			} catch (\Exception $e) {
@@ -101,7 +99,7 @@ class UserController extends Controller
 	{
 		$breadcrumb = [
 			(object) ['url' => route('home'), 'title' => trans('locales.home')],
-			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.users')],
+			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.roles')],
 			(object) ['url' => '', 'title' => (!$request->delete) ? trans('locales.show') : trans('locales.delete')],
 		];
 
@@ -139,7 +137,7 @@ class UserController extends Controller
 	{
 		$breadcrumb = [
 			(object) ['url' => route('home'), 'title' => trans('locales.home')],
-			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.users')],
+			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.roles')],
 			(object) ['url' => '', 'title' => trans('locales.create')],
 		];
 
@@ -156,7 +154,11 @@ class UserController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		// dd($request);
+
+		$request->replace(array_merge($request->all(), [
+			'slug' => $this->slug($request->name),
+		]));
+
 		if (!$request->is('api/*')) {
 			$data = $this->repository->store($request);
 
@@ -190,7 +192,7 @@ class UserController extends Controller
 	{
 		$breadcrumb = [
 			(object) ['url' => route('home'), 'title' => trans('locales.home')],
-			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.users')],
+			(object) ['url' => route($this->route . '.index'), 'title' => trans('locales.roles')],
 			(object) ['url' => '', 'title' => trans('locales.edit')],
 		];
 
@@ -210,6 +212,10 @@ class UserController extends Controller
 	 */
 	public function update(Request $request, int $id)
 	{
+		$request->replace(array_merge($request->all(), [
+			'slug' => $this->slug($request->name),
+		]));
+
 		if (!$request->is('api/*')) {
 			$data = $this->repository->update($request, $id);
 

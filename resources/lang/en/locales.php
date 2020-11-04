@@ -25,8 +25,19 @@ return [
 	'passwordConfirmation' => 'Confirm Password',
 
 	'menu' => 'Menu',
+	'user' => 'User',
 	'users' => 'Users',
+	'role' => 'Role',
+	'roles' => 'Roles',
+	'permission' => 'Permission',
+	'permissions' => 'Permissions',
 
+	'description' => 'Description',
+	'descriptions' => 'Descriptions',
+
+	'slug' => 'Slug',
+	'level' => 'Level',
+	'active' => 'Active',
 	'actions' => 'Actions',
 	'search' => 'Search',
 	'search_returned' => 'Search returned empty...',

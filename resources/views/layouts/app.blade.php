@@ -63,6 +63,10 @@
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item"
 									href="{{ route('admin.users.index') }}">{{ __('locales.users') }}</a>
+								<a class="dropdown-item"
+									href="{{ route('admin.roles.index') }}">{{ __('locales.roles') }}</a>
+								<a class="dropdown-item"
+									href="{{ route('admin.permissions.index') }}">{{ __('locales.permissions') }}</a>
 							</div>
 						</li>
 						<li class="nav-item dropdown">

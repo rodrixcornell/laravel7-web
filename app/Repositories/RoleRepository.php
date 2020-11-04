@@ -2,10 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
-// use App\Repositories\SearchRepository;
+use App\Models\Role;
 
-class UserRepository
+class RoleRepository
 {
 	/**
 	 * Undocumented variable
@@ -33,19 +32,17 @@ class UserRepository
 	 * @var array
 	 */
 	protected $filters = [
-		'name', 'email',
+		'name', 'description',
 	];
 
 	/**
 	 * Undocumented function
 	 *
-	 * @param User $model
 	 * @param SearchRepository $search
 	 */
-	// function __construct(User $model, SearchRepository $search)
 	function __construct(SearchRepository $search)
 	{
-		$this->model = User::class;
+		$this->model = Role::class;
 		$this->search = $search;
 	}
 
@@ -57,7 +54,6 @@ class UserRepository
 	 */
 	public function index(object $request)
 	{
-		// dd($this->model->getFillable());
 		return $this->search->searchBuilder($this->model::with([]), $request, $this->perPage, $this->filters);
 	}
 
@@ -69,8 +65,6 @@ class UserRepository
 	 */
 	public function show(int $id)
 	{
-		// if (!is_numeric($id)) abort(400, "ID \"$id\" invalido.");
-		// $registered = $this->model::where(["id"=>$id])->first();
 		$registered = $this->model::findOrFail($id);
 		$registered = $this->model::find($id);
 		if (!$registered) {
@@ -79,12 +73,6 @@ class UserRepository
 			session()->flash('msg', $registered);
 			return redirect()->back();
 		}
-		// $registered->person;
-		// $registered->groups;
-		// $registered->roles;
-		// $registered->roles[0]->permissions;
-		// $role = Role::findOrFail($registered->roles[0]->id);
-		// $registered->permission = $role->permissions;
 
 		return $registered;
 	}
@@ -99,8 +87,7 @@ class UserRepository
 	{
 		$validator = \Validator::make($request->all(), [
 			'name' => ['required', 'string', 'max:255'],
-			'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-			'password' => ['required', 'string', 'min:8', 'confirmed'],
+			'description' => ['required', 'string', 'max:355'],
 		]);
 
 		if (!$request->is('api/*')) {
@@ -117,8 +104,8 @@ class UserRepository
 
 		$data = [
 			"name" => $request->name,
-			"email" => $request->email,
-			'password' => \Hash::make($request->password),
+			"slug" => $request->slug,
+			"description" => $request->description,
 		];
 
 		$registered = $this->model::create($data);
@@ -143,8 +130,7 @@ class UserRepository
 	{
 		$validator = \Validator::make($request->all(), [
 			'name' => ['required', 'string', 'max:255'],
-			'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
-			'password' => ['required', 'string', 'min:8', 'confirmed'],
+			'description' => ['required', 'string', 'max:355'],
 		]);;
 
 		if (!$request->is('api/*')) {
@@ -161,8 +147,8 @@ class UserRepository
 
 		$data = [
 			"name" => $request->name,
-			"email" => $request->email,
-			'password' => \Hash::make($request->password),
+			"slug" => $request->slug,
+			"description" => $request->description,
 		];
 
 		$registered = $this->model::where(["id" => $id])->update($data);
@@ -195,15 +181,5 @@ class UserRepository
 		}
 
 		return $registered;
-	}
-
-	public function isAdmin()
-	{
-		return $this->is_admin;
-	}
-
-	public function isActive()
-	{
-		return $this->is_active;
 	}
 }

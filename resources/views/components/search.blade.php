@@ -7,7 +7,7 @@
 				{{-- <label class="my-1 mr-2" for="inputSearch">{{ __('locales.name') }} /
 				{{ __('locales.emailAddress') }}</label> --}}
 				<input type="search" class="form-control mr-sm-2" id="inputSearch" name="search" value="{{ $search }}"
-					placeholder="{{ __('locales.name') }} / {{ __('locales.emailAddress') }}" aria-label="Search" />
+					placeholder="{{ __('locales.search') }}" aria-label="Search" />
 			</div>
 
 			<button type="submit" class="btn btn-primary my-2 mr-sm-2">

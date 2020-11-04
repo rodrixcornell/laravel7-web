@@ -25,8 +25,18 @@ return [
 	'passwordConfirmation' => 'Confirme a Senha',
 
 	'menu' => 'Menu',
+	'user' => 'Usuário',
 	'users' => 'Usuários',
+	'role' => 'Função',
+	'roles' => 'Funções',
+	'permission' => 'Permissão',
+	'permissions' => 'Permissões',
 
+	'description' => 'Descrição',
+	'descriptions' => 'Descrições',
+	'slug' => 'URL Amigável',
+	'level' => 'Nível',
+	'active' => 'Ativo',
 	'actions' => 'Ações',
 	'search' => 'Pesquisar',
 	'search_returned' => 'A pesquisa voltou vazia...',
